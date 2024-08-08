@@ -1,4 +1,7 @@
-﻿namespace cpm_ebelge.Models
+﻿using cpm_ebelge.Models.BaseModels;
+using System;
+
+namespace cpm_ebelge.Models
 {
 
     public class eIrsaliyeProtectedValues
@@ -7,7 +10,7 @@
         public dynamic doc { get; set; }
 
     }
-    public abstract class EIrsaliye : EIrsaliye_EFatura
+    public abstract class eIrsaliye : BaseDocument
     {
         protected eIrsaliyeProtectedValues eIrsaliyeProtectedValues { get; set; } = new eIrsaliyeProtectedValues();
 
@@ -31,13 +34,10 @@
             }
 
 
-            ///TOPLUGONDER---SWITCHE KADAR OLAN KISIM İÇİNDE OLUCAK DİĞERLERİ SEALED CLASSTA-----------------------------------------------------------------------------------------------------
-
         }
         public sealed class FIT_ING_INGBANKIrsaliye : EIrsaliye
         {
             
-
         }
         public sealed class DPlanetEIrsaliye : EIrsaliye
         {
@@ -264,129 +264,18 @@
             ReceiptAdviceSerializer serializer = new ReceiptAdviceSerializer();
             var docStr = serializer.GetXmlAsString(Yanit);
             eIrsaliyeProtectedValues.doc = Encoding.UTF8.GetBytes(docStr);
-            switch (UrlModel.SelectedItem)
-            {
-                case "FIT":
-                case "ING":
-                case "INGBANK":
-                    var fitIrsaliye = new FIT.DespatchWebService();
-                    fitIrsaliye.WebServisAdresDegistir();
 
-                    //var res = fitIrsaliye.IrsaliyeYanitiGonder(Yanit);
-                    //var fitDosya = fitIrsaliye.IrsaliyeYanitiIndir(res.Response[0].UUID);
-                    //var fitYnt = Entegrasyon.ConvertToYanit(fitDosya.Response[0], "GDN");
-                    //
-                    //Entegrasyon.InsertIntoEirYnt(fitYnt);
-
-                    Yanit.ID = new UblReceiptAdvice.IDType { Value = Entegrasyon.GetIrsaliyeYanitEvrakNo() };
-
-                    var res = fitIrsaliye.IrsaliyeYanitiGonder(Yanit);
-                    var fitDosya = fitIrsaliye.GonderilenIrsaliyeYanitlari(res.Response[0].EnvUUID, res.Response[0].UUID);
-                    var fitYnt = Entegrasyon.ConvertToYanit(fitDosya, "GDN", res.Response[0].EnvUUID);
-                    Entegrasyon.InsertIntoEirYnt(fitYnt);
-                    break;
-                case "DPLANET":
-                    var dpIrsaliye = new DigitalPlanet.DespatchWebService();
-                    dpIrsaliye.WebServisAdresDegistir();
-                    dpIrsaliye.Login();
-
-                    var dpSonuc = dpIrsaliye.EIrsaliyeCevap(eIrsaliyeProtectedValues.doc);
-                    //File.WriteAllText("ReceiptAdvice_Resp.json", JsonConvert.SerializeObject(dpSonuc));
-                    if (dpSonuc.ServiceResult == COMMON.dpDespatch.Result.Error)
-                        throw new Exception(dpSonuc.ServiceResultDescription);
-
-                    foreach (var receipments in dpSonuc.Receipments)
-                    {
-                        var irsaliyeYanit = dpIrsaliye.GidenEIrsaliyeYanitIndir(receipments.UUID);
-                        var ynt = Entegrasyon.ConvertToYanit(irsaliyeYanit.Receipments[0], "GDN");
-
-                        Entegrasyon.InsertIntoEirYnt(ynt);
-                    }
-                    break;
-                case "EDM":
-                    break;
-                case "QEF":
-                    break;
-                default:
-                    throw new Exception("Tanımlı Entegratör Bulunamadı!");
-            }
         }
-        public static void YanitGuncelle(string UUID, string ZarfGuid)
-        {
-            switch (UrlModel.SelectedItem)
-            {
-                case "FIT":
-                case "ING":
-                case "INGBANK":
-                    var fitIrsaliye = new FIT.DespatchWebService();
-                    fitIrsaliye.WebServisAdresDegistir();
-                    var fitDosya = fitIrsaliye.GonderilenIrsaliyeYanitlari(ZarfGuid, UUID);
-                    var fitYnt = Entegrasyon.ConvertToYanit(fitDosya, "GDN", ZarfGuid);
 
-                    if (appConfig.Debugging)
-                    {
-                        MessageBox.Show(ZarfGuid);
-                    }
-                    Entegrasyon.UpdateEirYnt(fitYnt);
-                    break;
-                case "DPLANET":
-                    var dpIrsaliye = new DigitalPlanet.DespatchWebService();
-                    dpIrsaliye.WebServisAdresDegistir();
-                    dpIrsaliye.Login();
+      public static void YanitGuncelle(string UUID, string ZarfGuid)
+      {
 
-                    var dpSonuc = dpIrsaliye.EIrsaliyeYanitDurumu(UUID);
-                    var durum = new EIRYNT
-                    {
-                        DURUMACIKLAMA = dpSonuc.StatusDescription,
-                        DURUMKOD = dpSonuc.StatusCode == 54 ? "1300" : dpSonuc.StatusCode + "",
-                        EVRAKGUID = UUID
-                    };
-
-                    Entegrasyon.UpdateEirYnt(durum);
-                    break;
-                case "EDM":
-                    break;
-                default:
-                    throw new Exception("Tanımlı Entegratör Bulunamadı!");
-            }
-        }
+       }
+  
         public static void GonderilenYanitlar(string UUID)
         {
-            switch (UrlModel.SelectedItem)
-            {
-                case "ING":
-                case "INGBANK":
-                case "FIT":
-                    var fitIrsaliye = new FIT.DespatchWebService();
-                    fitIrsaliye.WebServisAdresDegistir();
-                    var yanitlar = fitIrsaliye.IrsaliyeYanitiIndir(UUID);
+            
+         }
+        
+   
 
-                    var yanitlar2 = Entegrasyon.ConvertToYanitList(yanitlar.Response[0], "GDN", Entegrasyon.GetEvrakNoFromGuid(UUID));
-                    if (appConfig.Debugging)
-                    {
-                        if (yanitlar?.Response?.Length > 0)
-                        {
-                            if (yanitlar?.Response[0]?.Receipts?.Length > 0)
-                            {
-                                MessageBox.Show(yanitlar.Response[0].Receipts[0].EnvUUID);
-                            }
-                        }
-                    }
-                    foreach (var yanit in yanitlar2)
-                    {
-                        Entegrasyon.InsertIntoEirYnt(yanit);
-                        Entegrasyon.UpdateEirYnt(yanit);
-                    }
-                    break;
-                case "DPLANET":
-                    //var dpIrsaliye = new DigitalPlanet.DespatchWebService();
-                    //dpIrsaliye.EIrsaliyeGonderilenYanitlar(UUID);
-                    break;
-                case "EDM":
-                    break;
-                default:
-                    throw new Exception("Tanımlı Entegratör Bulunamadı!");
-            }
-        }
-    } 
-}

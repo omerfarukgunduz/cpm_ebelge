@@ -212,6 +212,21 @@ namespace cpm_ebelge.Models.EDM
 
         }
 
+        public override string YanitGonder()
+        {
 
+            base.YanitGonder();
+
+        }
+        public override string YanitGuncelle()
+        {
+            base.YanitGuncelle();
+        }
+
+        public override string GonderilenYanitlar()
+        {
+            base.GonderilenYanitlar();
+
+        }
     }
 }

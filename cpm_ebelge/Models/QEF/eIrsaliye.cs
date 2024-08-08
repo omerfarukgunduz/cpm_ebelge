@@ -212,7 +212,22 @@ namespace cpm_ebelge.Models.QEF
         }
 
 
+        public override string YanitGonder()
+        {
 
+            base.YanitGonder();
+
+        }
+        public override string YanitGuncelle()
+        {
+            base.YanitGuncelle();
+        }
+
+        public override string GonderilenYanitlar()
+        {
+            base.GonderilenYanitlar();
+
+        }
 
     }
 }

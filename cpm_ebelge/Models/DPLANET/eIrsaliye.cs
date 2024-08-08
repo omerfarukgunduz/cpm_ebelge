@@ -383,6 +383,55 @@ namespace cpm_ebelge.Models.DPLANET
 
         }
 
+        public override string YanitGonder()
+        {
+
+            base.YanitGonder();
+            var dpIrsaliye = new DigitalPlanet.DespatchWebService();
+            dpIrsaliye.WebServisAdresDegistir();
+            dpIrsaliye.Login();
+
+            var dpSonuc = dpIrsaliye.EIrsaliyeCevap(eIrsaliyeProtectedValues.doc);
+            //File.WriteAllText("ReceiptAdvice_Resp.json", JsonConvert.SerializeObject(dpSonuc));
+            if (dpSonuc.ServiceResult == COMMON.dpDespatch.Result.Error)
+                throw new Exception(dpSonuc.ServiceResultDescription);
+
+            foreach (var receipments in dpSonuc.Receipments)
+            {
+                var irsaliyeYanit = dpIrsaliye.GidenEIrsaliyeYanitIndir(receipments.UUID);
+                var ynt = Entegrasyon.ConvertToYanit(irsaliyeYanit.Receipments[0], "GDN");
+
+                Entegrasyon.InsertIntoEirYnt(ynt);
+            }
+            break;
+        }
+
+        public override string YanitGuncelle()
+        {
+
+            base.YanitGuncelle();
+            var dpIrsaliye = new DigitalPlanet.DespatchWebService();
+            dpIrsaliye.WebServisAdresDegistir();
+            dpIrsaliye.Login();
+
+            var dpSonuc = dpIrsaliye.EIrsaliyeYanitDurumu(UUID);
+            var durum = new EIRYNT
+            {
+                DURUMACIKLAMA = dpSonuc.StatusDescription,
+                DURUMKOD = dpSonuc.StatusCode == 54 ? "1300" : dpSonuc.StatusCode + "",
+                EVRAKGUID = UUID
+            };
+
+            Entegrasyon.UpdateEirYnt(durum);
+            break;
+        }
+
+        public override string GonderilenYanitlar()
+        {
+            base.GonderilenYanitlar();
+
+        }
+
 
     }
 }

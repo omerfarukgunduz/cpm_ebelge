@@ -399,5 +399,71 @@ namespace cpm_ebelge.Models.FIT
         }
 
 
+        public override string YanitGonder()
+        {
+
+            base.YanitGonder();
+            var fitIrsaliye = new FIT.DespatchWebService();
+            fitIrsaliye.WebServisAdresDegistir();
+
+            //var res = fitIrsaliye.IrsaliyeYanitiGonder(Yanit);
+            //var fitDosya = fitIrsaliye.IrsaliyeYanitiIndir(res.Response[0].UUID);
+            //var fitYnt = Entegrasyon.ConvertToYanit(fitDosya.Response[0], "GDN");
+            //
+            //Entegrasyon.InsertIntoEirYnt(fitYnt);
+
+            Yanit.ID = new UblReceiptAdvice.IDType { Value = Entegrasyon.GetIrsaliyeYanitEvrakNo() };
+
+            var res = fitIrsaliye.IrsaliyeYanitiGonder(Yanit);
+            var fitDosya = fitIrsaliye.GonderilenIrsaliyeYanitlari(res.Response[0].EnvUUID, res.Response[0].UUID);
+            var fitYnt = Entegrasyon.ConvertToYanit(fitDosya, "GDN", res.Response[0].EnvUUID);
+            Entegrasyon.InsertIntoEirYnt(fitYnt);
+            break;
+        }
+
+        public override string YanitGuncelle()
+        {
+
+            base.YanitGuncelle();
+            var fitIrsaliye = new FIT.DespatchWebService();
+            fitIrsaliye.WebServisAdresDegistir();
+            var fitDosya = fitIrsaliye.GonderilenIrsaliyeYanitlari(ZarfGuid, UUID);
+            var fitYnt = Entegrasyon.ConvertToYanit(fitDosya, "GDN", ZarfGuid);
+
+            if (appConfig.Debugging)
+            {
+                MessageBox.Show(ZarfGuid);
+            }
+            Entegrasyon.UpdateEirYnt(fitYnt);
+            break;
+        }
+
+        public override string GonderilenYanitlar()
+        {
+            base.GonderilenYanitlar();
+            var fitIrsaliye = new FIT.DespatchWebService();
+            fitIrsaliye.WebServisAdresDegistir();
+            var yanitlar = fitIrsaliye.IrsaliyeYanitiIndir(UUID);
+
+            var yanitlar2 = Entegrasyon.ConvertToYanitList(yanitlar.Response[0], "GDN", Entegrasyon.GetEvrakNoFromGuid(UUID));
+            if (appConfig.Debugging)
+            {
+                if (yanitlar?.Response?.Length > 0)
+                {
+                    if (yanitlar?.Response[0]?.Receipts?.Length > 0)
+                    {
+                        MessageBox.Show(yanitlar.Response[0].Receipts[0].EnvUUID);
+                    }
+                }
+            }
+            foreach (var yanit in yanitlar2)
+            {
+                Entegrasyon.InsertIntoEirYnt(yanit);
+                Entegrasyon.UpdateEirYnt(yanit);
+            }
+            break;
+        }
+
+
     }
 }
