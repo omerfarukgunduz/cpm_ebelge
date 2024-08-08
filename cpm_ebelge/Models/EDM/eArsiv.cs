@@ -134,5 +134,48 @@ namespace cpm_ebelge.Models.EDM
         }
 
 
+        public override string GonderilenGuncelle()
+        {
+            base.GonderilenGuncelle();
+            var edmArsiv = new EDM.ArchiveWebService();
+            var edmGelen = edmArsiv.EArsivIndir(Entegrasyon.GetUUIDFromEvraksn(new List<int> { EVRAKSN })[0]);
+
+            if (edmGelen.Length > 0)
+            {
+                Result.DurumAciklama = edmGelen[0].HEADER.STATUS_DESCRIPTION;
+                Result.DurumKod = "";
+                Result.DurumZaman = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Second, 0);
+                Result.EvrakNo = edmGelen[0].ID;
+                Result.UUID = edmGelen[0].UUID;
+                Result.ZarfUUID = edmGelen[0].HEADER.ENVELOPE_IDENTIFIER ?? "";
+                Result.YanitDurum = 0;
+
+                Entegrasyon.UpdateEfagdn(Result, EVRAKSN, edmGelen[0].CONTENT.Value, onlyUpdate: true);
+
+                Result.DurumAciklama = edmGelen[0].HEADER.RESPONSE_CODE == "REJECT" ? "" : "";
+                Result.DurumKod = edmGelen[0].HEADER.RESPONSE_CODE == "REJECT" ? "3" : (edmGelen[0].HEADER.RESPONSE_CODE == "ACCEPT" ? "2" : "");
+                Result.DurumZaman = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Second, 0);
+                Result.UUID = edmGelen[0].UUID;
+
+                Entegrasyon.UpdateEfagdnStatus(Result);
+
+                //File.WriteAllText("edm.json", JsonConvert.SerializeObject(edmGelen));
+
+                if (edmGelen[0].HEADER.EARCHIVE_REPORT_UUID != null)
+                    Entegrasyon.UpdateEfagdnGonderimDurum(edmGelen[0].UUID, 4);
+                else if (edmGelen[0].HEADER.STATUS_DESCRIPTION == "SUCCEED")
+                    Entegrasyon.UpdateEfagdnGonderimDurum(edmGelen[0].UUID, 3);
+            }
+            else
+                throw new Exception(EVRAKSN + " Seri Numaralı Evrak Gönderilenler Listesinde Bulunmamaktadır!");
+            break;
+
+        }
+
+
+
+
+
+
     }
 }

@@ -192,6 +192,72 @@ namespace cpm_ebelge.Models.DPLANET
         }
 
 
+        public override string GonderilenGuncelle()
+        {
+            base.GonderilenGuncelle();
+            var dpArsiv = new DigitalPlanet.ArchiveWebService();
+            dpArsiv.WebServisAdresDegistir();
+
+            var uuid = Entegrasyon.GetUUIDFromEvraksn(new[] { EVRAKSN }.ToList());
+
+            if (uuid[0] != "")
+            {
+                var dpArs = dpArsiv.EArsivIndir(uuid[0]);
+                XmlSerializer ser = new XmlSerializer(typeof(InvoiceType));
+
+                var byteData = dpArsiv.EArsivIndir(dpArs.UUID).ReturnValue;
+                //File.WriteAllBytes("test.xml", byteData);
+                var i = (InvoiceType)ser.Deserialize(new MemoryStream(byteData));
+                if (i.AdditionalDocumentReference.First(elm => elm.DocumentTypeCode.Value == "CUST_INV_ID").ID.Value == EVRAKSN + "")
+                {
+                    Result.DurumAciklama = dpArs.StatusDescription;
+                    Result.DurumKod = dpArs.StatusCode + "";
+                    Result.DurumZaman = DateTime.Now;
+                    Result.EvrakNo = dpArs.InvoiceId;
+                    Result.UUID = dpArs.UUID;
+                    Result.ZarfUUID = "";
+                    Result.YanitDurum = 0;
+
+                    Entegrasyon.UpdateEfagdn(Result, EVRAKSN, byteData, true);
+                }
+            }
+            else
+            {
+                var dt = Entegrasyon.GetGonderimZaman(new[] { EVRAKSN }.ToList())[0];
+
+                if (dt == new DateTime(1900, 1, 1))
+                    dt = DateTime.Now;
+
+                var start = new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0);
+                var end = new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59);
+
+                var invoices = dpArsiv.EArsivIndir(start, end);
+
+                XmlSerializer ser = new XmlSerializer(typeof(InvoiceType));
+
+                foreach (var inv in invoices.Invoices)
+                {
+                    var byteData = dpArsiv.EArsivIndir(inv.UUID).ReturnValue;
+                    //File.WriteAllBytes("test.xml", byteData);
+                    var i = (InvoiceType)ser.Deserialize(new MemoryStream(byteData));
+                    if (i.AdditionalDocumentReference.First(elm => elm.DocumentTypeCode.Value == "CUST_INV_ID").ID.Value == EVRAKSN + "")
+                    {
+                        Result.DurumAciklama = inv.StatusDescription;
+                        Result.DurumKod = inv.StatusCode + "";
+                        Result.DurumZaman = DateTime.Now;
+                        Result.EvrakNo = inv.InvoiceId;
+                        Result.UUID = inv.UUID;
+                        Result.ZarfUUID = "";
+                        Result.YanitDurum = 0;
+
+                        Entegrasyon.UpdateEfagdn(Result, EVRAKSN, byteData, true);
+                    }
+                }
+            }
+            break;
+
+        }
+
 
 
 
