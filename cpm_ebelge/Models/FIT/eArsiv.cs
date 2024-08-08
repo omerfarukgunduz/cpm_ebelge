@@ -4,7 +4,7 @@
     {
         public override string Gonder()
         {
-
+            //
             base.Gonder();
             var fitEArsiv = new FIT.ArchiveWebService();
             var fitResult = fitEArsiv.EArsivGonder(eArsivProtectedValues.strFatura, eArsivProtectedValues.createdUBL.UUID.Value, doc.SUBE);
