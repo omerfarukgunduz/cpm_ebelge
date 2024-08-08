@@ -43,6 +43,14 @@ namespace cpm_ebelge.Models.DPLANET
 
         }
 
-
+        public override string Esle()
+        {
+        }
+        public override string Itiraz()
+        {
+        }
+        public override string TopluGonder()
+        {
+        }
     }
 }

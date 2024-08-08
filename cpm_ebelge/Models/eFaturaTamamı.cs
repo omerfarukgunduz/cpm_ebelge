@@ -11,7 +11,7 @@
     public abstract class EFatura : EIrsaliye_EFatura
     {
         protected eFaturaProtectedValues eFaturaProtectedValues { get; set; } = new eFaturaProtectedValues();
-        ///GONDER----------------------------------------------------------------------------------------------------
+
         public override string Gonder(int EVRAKSN)
         {
             DateTime dt = DateTime.Now;
@@ -77,8 +77,6 @@
         {
            
         }
-        ///------------------------------------------------------------------------------------------------------------------
-        ///TOPLUGONDER--------------------------------------------------------------------------------------------------------
         public override string TopluGonder(List<BaseInvoiceUBL> Faturalar, string ENTSABLON)
         {
             StringBuilder sb = new StringBuilder();
@@ -133,8 +131,6 @@
 
         }
 
-        ///------------------------------------------------------------------------------------------------------------------
-        ///-ESLE-------------------------------------------------------------------------------------------------------
         public override void Esle(List<int> Value, bool DontShow = false)
         {
         }
@@ -151,8 +147,6 @@
         {
         }
 
-        ///------------------------------------------------------------------------------------------------------------------
-        ///--ALINAN FATURALAR LISTESİ-----------------------------------------------------------------------------------------------
         public override List<AlinanBelge> AlinanFaturalarListesi(DateTime StartDate, DateTime EndDate)
         {
 
@@ -171,8 +165,6 @@
         {
         }
 
-        ///------------------------------------------------------------------------------------------------------------------
-        ///-İNDİR-----------------------------------------------------------------------------------------------------------
         public override void Indir(DateTime day1, DateTime day2)
         {
 
@@ -190,8 +182,6 @@
         {
         }
 
-        ///------------------------------------------------------------------------------------------------------------------
-        ///-KABUL-----------------------------------------------------------------------------------------------------------
         public override void Kabul(string GUID, string Aciklama)
         {
 
@@ -209,8 +199,6 @@
         {
         }
 
-        ///------------------------------------------------------------------------------------------------------------------
-        ///-RED--------------------------------------------------------------------------------------------------------------
         public override void Red(string GUID, string Aciklama)
         {
 
@@ -231,8 +219,6 @@
         {
         }
 
-        ///-----------------------------------------------------------------------------------------------------------------------
-        ///-GonderilenGuncelleByDate-----------------------------------------------------------------------------------------------
         public override void GonderilenGuncelleByDate(DateTime day1, DateTime day2)
         {
 
@@ -250,47 +236,43 @@
         public sealed class QEFEFatura : EFatura
         {
             }
-            ///-----------------------------------------------------------------------------------------------------------------------
-            ///-GonderilenGuncelleByList-----------------------------------------------------------------------------------------------
+            
+
             public override void GonderilenGuncelleByList(List<string> UUIDs)
             {
 
             }
-public sealed class FIT_ING_INGBANKEFatura : EFatura
-{
-}
-public sealed class DPlanetEFatura : EFatura
-{
-}
-public sealed class EDMEFatura : EFatura
-{
-}
-public sealed class QEFEFatura : EFatura
-
-{
-}
-
-///-----------------------------------------------------------------------------------------------------------------------
-///-GelenEsle-----------------------------------------------------------------------------------------------
-public static void GelenEsle(List<string> uuids)
-{
-
-}
-
-public sealed class FIT_ING_INGBANKEFatura : EFatura
-{
-}
-public sealed class DPlanetEFatura : EFatura
-{
-}
-public sealed class EDMEFatura : EFatura
-{
-}
-public sealed class QEFEFatura : EFatura
-
-{
-}
-            ///-----------------------------------------------------------------------------------------------------------------------
-
-
-}
+            public sealed class FIT_ING_INGBANKEFatura : EFatura
+                {
+                }
+            public sealed class DPlanetEFatura : EFatura
+            {
+            }
+            public sealed class EDMEFatura : EFatura
+            {
+            }
+            public sealed class QEFEFatura : EFatura
+            
+            {
+            }
+            
+            
+            public static void GelenEsle(List<string> uuids)
+            {
+            
+            }
+            
+            public sealed class FIT_ING_INGBANKEFatura : EFatura
+            {
+            }
+            public sealed class DPlanetEFatura : EFatura
+            {
+            }
+            public sealed class EDMEFatura : EFatura
+            {
+            }
+            public sealed class QEFEFatura : EFatura
+            
+            {
+            }
+            

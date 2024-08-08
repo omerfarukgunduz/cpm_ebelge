@@ -34,7 +34,15 @@ namespace cpm_ebelge.Models.EDM
             Entegrasyon.SilEarsiv(EVRAKSN, TOTAL, "", DateTime.Now);
             return "e-Müstahsil Makbuzu başarıyla iptal edildi.";
         }
-
+        public override string Esle()
+        {
+        }
+        public override string Itiraz()
+        {
+        }
+        public override string TopluGonder()
+        {
+        }
 
     }
 }

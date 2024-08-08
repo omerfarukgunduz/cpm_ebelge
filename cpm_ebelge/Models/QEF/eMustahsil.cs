@@ -50,5 +50,13 @@ namespace cpm_ebelge.Models.QEF
         }
 
 
+        public override string Esle()
+        {
+        }
+        public override string Itiraz()
+        {
+        }
+        public override string TopluGonder()
+        {
+        }
     }
-}

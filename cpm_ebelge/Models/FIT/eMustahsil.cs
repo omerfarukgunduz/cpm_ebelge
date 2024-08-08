@@ -31,6 +31,14 @@
             return fitResult[0].ResultDescription;
         }
 
-
+        public override string Esle()
+        {
+        }
+        public override string Itiraz()
+        {
+        }
+        public override string TopluGonder()
+        {
+        }
     }
 }

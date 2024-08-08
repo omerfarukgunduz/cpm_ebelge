@@ -167,6 +167,59 @@ namespace cpm_ebelge.Models.FIT
             return fitResult.Detail;
         }
 
+        public override string GonderilenGuncelle()
+        {
+            base.GonderilenGuncelle();
+            var Result = new Results.EFAGDN();
+            var fitArsiv = new FIT.ArchiveWebService();
+            fitArsiv.WebServisAdresDegistir();
+
+            string UUID = Entegrasyon.GetUUIDFromEvraksn(new List<int> { EVRAKSN })[0];
+            var evrakno = Entegrasyon.GetEvraknoFromEvraksn(new[] { EVRAKSN }.ToList())[0];
+
+            getSignedInvoiceResponseType ars = null;
+            Exception exx = null;
+
+            try
+            {
+                ars = fitArsiv.ImzaliIndir(UUID.ToUpper(), evrakno, EVRAKSN);
+            }
+            catch (Exception ex)
+            {
+                exx = ex;
+            }
+            try
+            {
+                ars = fitArsiv.ImzaliIndir(UUID.ToLower(), evrakno, EVRAKSN);
+            }
+            catch (Exception ex)
+            {
+                exx = ex;
+            }
+
+            if (ars != null)
+            {
+                Result.DurumAciklama = ars.Detail;
+                Result.DurumKod = "150";
+                Result.DurumZaman = DateTime.Now;
+                Result.EvrakNo = ars.invoiceNumber;
+                Result.UUID = ars.UUID;
+                Result.ZarfUUID = "";
+                Result.YanitDurum = 0;
+
+                Entegrasyon.UpdateEfagdn(Result, EVRAKSN, ars.binaryData, onlyUpdate: true);
+            }
+            else if (exx != null)
+            {
+                throw exx;
+                //Değiştir--CpmMessageBox.Show($"Entegratörden Fatura Bilgisi Dönmedi.\nEvraksn:{EVRAKSN}\nEvrakno:{evrakno}\nUUID:{UUID}", "Dikkat", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                //Değiştir--CpmMessageBox.Show($"Entegratör Açıklaması: {exx.Message}", "Dikkat", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+
+            break;
+
+        }
+
 
     }
 }

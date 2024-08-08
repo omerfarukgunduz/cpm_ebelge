@@ -19,7 +19,6 @@ namespace cpm_ebelge.Models
             {
                 StringBuilder sb = new StringBuilder();
                 var Result = new Results.EFAGDN();
-
                 if (Connector.m.SchematronKontrol)
                 {
                     DespatchAdviceSerializer ser = new DespatchAdviceSerializer();
@@ -30,10 +29,7 @@ namespace cpm_ebelge.Models
                             throw new Exception(schematronResult.Detail);
                     }
                 }
-
             }
-
-
         }
         public sealed class FIT_ING_INGBANKIrsaliye : EIrsaliye
         {
@@ -276,6 +272,4 @@ namespace cpm_ebelge.Models
         {
             
          }
-        
-   
-
+           

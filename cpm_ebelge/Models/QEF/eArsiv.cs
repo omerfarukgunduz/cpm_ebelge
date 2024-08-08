@@ -114,6 +114,31 @@ namespace cpm_ebelge.Models.QEF
             return "Test!";
         }
 
+        public override string GonderilenGuncelle()
+        {
+            base.GonderilenGuncelle();
+            var qefArsiv = new QEF.ArchiveService();
+            var qefGelen = qefArsiv.EArsivIndir(Entegrasyon.GetUUIDFromEvraksn(new List<int> { EVRAKSN })[0]);
+
+            Result.DurumAciklama = qefGelen.Result.resultText;
+            Result.DurumKod = qefGelen.Result.resultCode;
+            Result.DurumZaman = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Second, 0);
+            Result.EvrakNo = qefGelen.Result.resultExtra.First(elm => elm.key.ToString() == "faturaNo").value.ToString();
+            Result.UUID = qefGelen.Result.resultExtra.First(elm => elm.key.ToString() == "uuid").value.ToString();
+            Result.ZarfUUID = "";
+            Result.YanitDurum = 0;
+
+            Entegrasyon.UpdateEfagdn(Result, EVRAKSN, qefGelen.Belge.belgeIcerigi, onlyUpdate: true);
+
+            //if (qefGelen[0].HEADER.EARCHIVE_REPORT_UUID != null)
+            //    Entegrasyon.UpdateEfagdnGonderimDurum(qefGelen[0].UUID, 4);
+            //else if (qefGelen[0].HEADER.STATUS_DESCRIPTION == "SUCCEED")
+            //    Entegrasyon.UpdateEfagdnGonderimDurum(qefGelen[0].UUID, 3);
+            //else
+            //    throw new Exception(EVRAKSN + " Seri Numaralı Evrak Gönderilenler Listesinde Bulunmamaktadır!");
+            break;
+
+        }
 
     }
 }
